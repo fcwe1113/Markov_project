@@ -21,3 +21,5 @@ if __name__ == '__main__':
     environment = Maze.Maze(MAZE, 0, 0, 9, 9)
     print(environment)
     print(environment.print_dist())
+    print(environment.markov_traverse_heuristic(display_decision=True))
+    print(environment.markov_traverse_distance_matrix(display_decision=True))
