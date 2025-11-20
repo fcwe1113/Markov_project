@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0bfb6764-6f36-497e-8e07-ba0d496f7513" name="Changes" comment="implemented dist matrix and heuristic method">
+    <list default="true" id="0bfb6764-6f36-497e-8e07-ba0d496f7513" name="Changes" comment="implemented markov process for both heuristic and distance matrix methods">
+      <change beforePath="$PROJECT_DIR$/.idea/Markov_project.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Markov_project.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Maze.py" beforeDir="false" afterPath="$PROJECT_DIR$/Maze.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
@@ -50,12 +52,14 @@
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
     &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Python.AIP_grid_tree_dfs.executor&quot;: &quot;Run&quot;,
     &quot;Python.Maze.executor&quot;: &quot;Debug&quot;,
     &quot;Python.main.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/fcwe1113/PycharmProjects/Markov_project&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/fcwe1113/Downloads/AIP_grid_tree_dfs.py&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -110,7 +114,10 @@
       <workItem from="1761744036805" duration="3989000" />
       <workItem from="1761754439901" duration="22000" />
       <workItem from="1761760575584" duration="153000" />
-      <workItem from="1761813343334" duration="6129000" />
+      <workItem from="1761813343334" duration="6766000" />
+      <workItem from="1761836806742" duration="2709000" />
+      <workItem from="1761844468237" duration="670000" />
+      <workItem from="1761862716698" duration="3000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit">
       <option name="closed" value="true" />
@@ -128,7 +135,15 @@
       <option name="project" value="LOCAL" />
       <updated>1761745548493</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="implemented markov process for both heuristic and distance matrix methods">
+      <option name="closed" value="true" />
+      <created>1761819497110</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1761819497110</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -137,10 +152,12 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="initial commit" />
     <MESSAGE value="implemented dist matrix and heuristic method" />
-    <option name="LAST_COMMIT_MESSAGE" value="implemented dist matrix and heuristic method" />
+    <MESSAGE value="implemented markov process for both heuristic and distance matrix methods" />
+    <option name="LAST_COMMIT_MESSAGE" value="implemented markov process for both heuristic and distance matrix methods" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Markov_project$Maze.coverage" NAME="Maze Coverage Results" MODIFIED="1761743835507" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/Markov_project$main.coverage" NAME="main Coverage Results" MODIFIED="1761819403078" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Markov_project$main.coverage" NAME="main Coverage Results" MODIFIED="1761836810788" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Markov_project$AIP_grid_tree_dfs.coverage" NAME="AIP_grid_tree_dfs Coverage Results" MODIFIED="1761838432485" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$USER_HOME$/Downloads" />
   </component>
 </project>

@@ -219,9 +219,6 @@ class Maze:
                 if next_node == (self.endx, self.endy):
                     return f"Markov traverse with distance matrix function found the goal in {counter} tries\n" if display_decision else counter
 
-
-
-
     def __str__(self):
         # the tostring function of the maze
         # basically prints the maze out in shitty ascii chars
