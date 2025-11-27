@@ -307,7 +307,7 @@ class mazeGUI:
         self.fast_forward = False
         self.max_speed = False
         if self.search_started:
-            self.search_started = False
+            self.paused = False
         elif not self.search_started:
             # reset the board and start the animation loop
             self.reset()
