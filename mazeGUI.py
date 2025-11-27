@@ -10,6 +10,7 @@ class mazeGUI:
     # class constants
     CELL_SIZE = 40
     WALL_WIDTH = 3
+    CELL_TEXT_FONT_SIZE = 10
 
     def __init__(self, root, layout, start, end, animation_delay=30):
         # main tkinter window
@@ -37,12 +38,20 @@ class mazeGUI:
 
         # make visited array of the GUI to keep track of visited squares
         self.visited = []
-        self.last_node_repeated = False
+        self.visited_again = []
+
+        # make an array of paths to choose the one with lowest steps
+        self.pathings = []
+
+        # make an experience array gui to display on map
+        self.experience = [[0 for x in range(self.layout.get_maze_x())] for y in range(self.layout.get_maze_y())]
 
         # store variables for map gen variables
         # for obvious reasons dont set them too high unless you hate yourself
         self.wall_percentage = tk.IntVar(value=10) # probability (in %) for walls to appear in a block border
         self.oneway_percentage = tk.IntVar(value=10) # probability (in %) for oneways to appear in a block border
+        self.iterations = tk.IntVar(value=20)
+        self.run_num = 1
 
         # markov process to use
         self.search_instance = None
@@ -154,7 +163,7 @@ class mazeGUI:
         self.textbox.pack(pady=5)
 
         # draw the initial environment
-        self.draw_initial_map()
+        self.draw_map()
 
     def get_canvas_coords(self, x, y):
         return x * self.CELL_SIZE, y * self.CELL_SIZE, (x + 1) * self.CELL_SIZE, (y + 1) * self.CELL_SIZE
@@ -180,16 +189,16 @@ class mazeGUI:
         else:
             raise ValueError("diagonal arrows are not supported")
 
-    def draw_cell_content(self, x, y, text=None, colour=None):
+    def draw_cell_content(self, x, y, text=None, colour=None, font_size=16):
         x0, y0, x1, y1 = self.get_canvas_coords(x, y)
 
         if colour:
             padding = self.WALL_WIDTH + 2
             self.canvas.create_rectangle(x0 + padding, y0 + padding, x1 - padding, y1 - padding, fill=colour, outline="", tags="cell_content")
         if text:
-            self.canvas.create_text((x0 + x1) / 2, (y0 + y1) / 2, text=text, font=("Arial", 16), fill="black", tags="cell_content")
+            self.canvas.create_text((x0 + x1) / 2, (y0 + y1) / 2, text=text, font=("Arial", font_size), fill="black", tags="cell_content")
 
-    def draw_initial_map(self):
+    def draw_map(self):
         arrow_offset = 0.3
 
         # clear the canvas
@@ -198,6 +207,21 @@ class mazeGUI:
         # loop through every cell in the grid
         for y in range(self.map_height):
             for x in range(self.map_width):
+
+                # draw cell contents
+                if (x, y) == self.start:
+                    self.draw_cell_content(x, y, "S", "green")
+                elif (x, y) == self.end:
+                    self.draw_cell_content(x, y, "E", "red")
+                elif (x, y) in self.visited:
+                    self.draw_cell_content(x, y, str(self.experience[y][x]), "cyan", font_size=self.CELL_TEXT_FONT_SIZE)
+                elif (x, y) in self.visited_again:
+                    self.draw_cell_content(x, y, str(self.experience[y][x]), "orange", font_size=self.CELL_TEXT_FONT_SIZE)
+                else:
+                    self.draw_cell_content(x, y, str(self.experience[y][x]), font_size=self.CELL_TEXT_FONT_SIZE)
+
+
+                # draw environment
                 # get pixel coords
                 x0, y0, x1, y1 = self.get_canvas_coords(x, y)
 
@@ -228,9 +252,6 @@ class mazeGUI:
                         self.draw_arrow(x1 + self.CELL_SIZE / 2 - self.CELL_SIZE * arrow_offset, y1 - self.CELL_SIZE / 2, x1 - self.CELL_SIZE / 2 + self.CELL_SIZE * arrow_offset, y1 - self.CELL_SIZE / 2)
                     else:
                         self.canvas.create_line(x1, y0, x1, y1, fill='black', width=self.WALL_WIDTH)
-
-        self.draw_cell_content(self.start[0], self.start[1], "S", "green")
-        self.draw_cell_content(self.end[0], self.end[1], "E", "red")
 
     # the function the sliders call whenever they are moved
     def update_sliders(self, event):
@@ -274,7 +295,7 @@ class mazeGUI:
         self.start = (self.layout.startx, self.layout.starty)
         self.end = (self.layout.endx, self.layout.endy)
         self.reset()
-        self.draw_initial_map()
+        self.draw_map()
         # print(self.maze)
 
     def reset(self):
@@ -294,14 +315,17 @@ class mazeGUI:
         self.paused = False
         self.info_text_display.set(self.canvas_legend)
         self.visited = []
-        self.last_node_repeated = False
+        self.visited_again = []
+        self.pathings = []
         self.execution_time = 0
+        self.experience = [[0 for x in range(self.layout.get_maze_x())] for y in range(self.layout.get_maze_y())]
+        self.run_num = 1
 
         # reenable the gui
         self.markov_menu.config(state="normal")
 
         # redraw the environment
-        self.draw_initial_map()
+        self.draw_map()
 
     def start_resume_func(self):
         self.fast_forward = False
@@ -329,21 +353,21 @@ class mazeGUI:
             self.search_generator = self.search_instance.run()
 
             # call animation loop function for the first time
-            self.run_search_step()
+            self.run_search_step(self.iterations.get())
 
-    def run_search_step(self):
+    def run_search_step(self, iterations):
         # stop the animation is search is stopped
         if not self.search_started:
             return
 
         if self.paused:
-            self.root.after(1, self.run_search_step)
+            self.root.after(1, self.run_search_step, self.iterations.get())
         else:
             try:
                 # get the next node from the search generator
-                current_node, text, execution_time = next(self.search_generator)
+                current_node, text, execution_time, self.experience = next(self.search_generator)
                 if text != "":
-                    self.info_text_display.set(f"{self.canvas_legend}\n{text}")
+                    self.info_text_display.set(f"run number {self.run_num}\n{self.canvas_legend}\n{text}")
                 else:
                     self.info_text_display.set(self.canvas_legend)
 
@@ -355,12 +379,10 @@ class mazeGUI:
 
                 (x, y) = current_node
 
-                if self.last_node != self.start and self.last_node != self.end:
-                    if self.last_node_repeated:
-                        self.draw_cell_content(self.last_node[0], self.last_node[1], colour="orange")
-                        self.last_node_repeated = False
-                    else:
-                        self.draw_cell_content(self.last_node[0], self.last_node[1], colour="cyan")
+                if current_node in self.visited:
+                    self.visited_again.append(current_node)
+
+                self.draw_map()
 
                 if current_node != self.start and self.last_node != self.end:
                     if current_node in self.visited:
@@ -373,51 +395,75 @@ class mazeGUI:
 
                 # check if reached goal
                 if current_node == self.end:
-                    self.search_started = False
-                    self.draw_final_path()
-                    self.markov_menu.config(state="normal")
-                    return
+                    if self.run_num == iterations:
+                        self.search_started = False
+                        self.draw_final_path()
+                        self.markov_menu.config(state="normal")
+                        return
+                    else:
+                        self.pathings.append(self.search_instance.reconstruct_path())
+                        self.draw_final_path()
+                        self.run_num += 1
+                        # self.search_instance.reset()
+                        self.visited = []
+                        self.visited_again = []
+                        self.root.after(1000, self.run_search_step, self.iterations.get())
+                        return
 
                 #schedule the next animation loop
                 if self.max_speed:
-                    self.root.after(1, self.run_search_step)
+                    self.root.after(1, self.run_search_step, self.iterations.get())
                 elif self.fast_forward:
-                    self.root.after(self.animation_delay // 2, self.run_search_step)
+                    self.root.after(self.animation_delay // 2, self.run_search_step, self.iterations.get())
                 else:
-                    self.root.after(self.animation_delay, self.run_search_step)
+                    self.root.after(self.animation_delay, self.run_search_step, self.iterations.get())
 
             except StopIteration:
                 self.search_started = False
                 self.markov_menu.config(state="normal")
             except Exception as e:
                 self.info_text_display.set(f"{self.canvas_legend}\nAn error occurred:{e}")
+                print(e)
                 self.search_started = False
                 self.markov_menu.config(state="normal")
 
     def draw_final_path(self):
 
-        self.info_text_display.set(f"{self.canvas_legend}\nexecution time: {self.execution_time}")
+        def draw_path(path, colour):
+            for i in range(len(path) - 1):
+                x_start, y_start = path[i]
+                x_end, y_end = path[i + 1]
+
+                # get the central pixel coord of the start cell
+                x0, y0, x1, y1 = self.get_canvas_coords(x_start, y_start)
+                start_center_x, start_center_y = (x0 + x1) / 2, (y0 + y1) / 2
+
+                # get the central pixel coord of the end cell
+                x0, y0, x1, y1 = self.get_canvas_coords(x_end, y_end)
+                end_center_x, end_center_y = (x0 + x1) / 2, (y0 + y1) / 2
+
+                # draw the line connecting the centres
+                self.canvas.create_line(start_center_x, start_center_y, end_center_x, end_center_y, fill=colour, width=3)
+
+                # redraw start and end on top so the path line doesnt cover them
+                self.draw_cell_content(self.start[0], self.start[1], "S", "green")
+                self.draw_cell_content(self.end[0], self.end[1], "E", "red")
+
         path = self.search_instance.reconstruct_path()
 
         if not path:
             print("path reconstruction failed")
             return
 
-        for i in range(len(path) - 1):
-            x_start, y_start = path[i]
-            x_end, y_end = path[i + 1]
+        draw_path(path, "magenta")
+        idd = 0
+        if self.iterations.get() == self.run_num:
+            min_length = len(self.pathings[0])
+            for i in range(1, len(self.pathings)):
+                if len(self.pathings[i]) < min_length:
+                    idd = i
+                    min_length = len(self.pathings[i])
 
-            # get the central pixel coord of the start cell
-            x0, y0, x1, y1 = self.get_canvas_coords(x_start, y_start)
-            start_center_x, start_center_y = (x0 + x1) / 2, (y0 + y1) / 2
-
-            # get the central pixel coord of the end cell
-            x0, y0, x1, y1 = self.get_canvas_coords(x_end, y_end)
-            end_center_x, end_center_y = (x0 + x1) / 2, (y0 + y1) / 2
-
-            # draw the line connecting the centres
-            self.canvas.create_line(start_center_x, start_center_y, end_center_x, end_center_y, fill="magenta", width=3)
-
-            # redraw start and end on top so the path line doesnt cover them
-            self.draw_cell_content(self.start[0], self.start[1], "S", "green")
-            self.draw_cell_content(self.end[0], self.end[1], "E", "red")
+            path = self.pathings[idd]
+            draw_path(path, "purple")
+            self.info_text_display.set(f"{self.canvas_legend}\nexecution time: {self.execution_time / 1000000} milliseconds\nbest path found to be {len(path)} steps from iteration {idd + 1}")

@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0bfb6764-6f36-497e-8e07-ba0d496f7513" name="Changes" comment="implemented a*">
+    <list default="true" id="0bfb6764-6f36-497e-8e07-ba0d496f7513" name="Changes" comment="added random noise and implemented available policies output">
       <change beforePath="$PROJECT_DIR$/heuristic_markov.py" beforeDir="false" afterPath="$PROJECT_DIR$/heuristic_markov.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mazeGUI.py" beforeDir="false" afterPath="$PROJECT_DIR$/mazeGUI.py" afterDir="false" />
@@ -118,7 +118,7 @@
       <workItem from="1761862716698" duration="3000" />
       <workItem from="1763630591795" duration="2280000" />
       <workItem from="1763635150891" duration="2000" />
-      <workItem from="1764234875301" duration="16751000" />
+      <workItem from="1764234875301" duration="28172000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit">
       <option name="closed" value="true" />
@@ -176,7 +176,15 @@
       <option name="project" value="LOCAL" />
       <updated>1764247382333</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="added random noise and implemented available policies output">
+      <option name="closed" value="true" />
+      <created>1764252232985</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1764252232985</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -189,18 +197,10 @@
     <MESSAGE value="comments and planning" />
     <MESSAGE value="GUI implemented" />
     <MESSAGE value="implemented a*" />
-    <option name="LAST_COMMIT_MESSAGE" value="implemented a*" />
+    <MESSAGE value="added random noise and implemented available policies output" />
+    <option name="LAST_COMMIT_MESSAGE" value="added random noise and implemented available policies output" />
   </component>
   <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/heuristic_markov.py</url>
-          <line>37</line>
-          <option name="timeStamp" value="6" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
     <watches-manager>
       <configuration name="PythonConfigurationType">
         <watch expression="self.visited" language="Python" />
@@ -209,7 +209,7 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Markov_project$Maze.coverage" NAME="Maze Coverage Results" MODIFIED="1761743835507" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/Markov_project$main.coverage" NAME="main Coverage Results" MODIFIED="1764252128797" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Markov_project$main.coverage" NAME="main Coverage Results" MODIFIED="1764265632593" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Markov_project$AIP_grid_tree_dfs.coverage" NAME="AIP_grid_tree_dfs Coverage Results" MODIFIED="1761838432485" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$USER_HOME$/Downloads" />
   </component>
 </project>
