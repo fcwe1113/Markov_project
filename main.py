@@ -33,7 +33,7 @@ if __name__ == '__main__':
     start_pos = (0, 0)
     end_pos = (12, 3)
 
-    app = mazeGUI.mazeGUI(gui, MAZE, start_pos, end_pos)
+    app = mazeGUI.mazeGUI(gui, MAZE, start_pos, end_pos, animation_delay=100)
 
     gui.mainloop()
     # environment = Maze.Maze(MAZE, 0, 0, 9, 9)

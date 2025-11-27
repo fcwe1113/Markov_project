@@ -4,11 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0bfb6764-6f36-497e-8e07-ba0d496f7513" name="Changes" comment="comments and planning">
-      <change afterPath="$PROJECT_DIR$/mazeGUI.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Maze.py" beforeDir="false" afterPath="$PROJECT_DIR$/Maze.py" afterDir="false" />
+    <list default="true" id="0bfb6764-6f36-497e-8e07-ba0d496f7513" name="Changes" comment="GUI implemented">
+      <change afterPath="$PROJECT_DIR$/heuristic_markov.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mazeGUI.py" beforeDir="false" afterPath="$PROJECT_DIR$/mazeGUI.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -119,7 +118,7 @@
       <workItem from="1761862716698" duration="3000" />
       <workItem from="1763630591795" duration="2280000" />
       <workItem from="1763635150891" duration="2000" />
-      <workItem from="1764234875301" duration="8742000" />
+      <workItem from="1764234875301" duration="12368000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit">
       <option name="closed" value="true" />
@@ -161,7 +160,15 @@
       <option name="project" value="LOCAL" />
       <updated>1763630885797</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="GUI implemented">
+      <option name="closed" value="true" />
+      <created>1764243741269</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1764243741269</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -172,11 +179,12 @@
     <MESSAGE value="implemented dist matrix and heuristic method" />
     <MESSAGE value="implemented markov process for both heuristic and distance matrix methods" />
     <MESSAGE value="comments and planning" />
-    <option name="LAST_COMMIT_MESSAGE" value="comments and planning" />
+    <MESSAGE value="GUI implemented" />
+    <option name="LAST_COMMIT_MESSAGE" value="GUI implemented" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Markov_project$Maze.coverage" NAME="Maze Coverage Results" MODIFIED="1761743835507" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/Markov_project$main.coverage" NAME="main Coverage Results" MODIFIED="1764243479777" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Markov_project$main.coverage" NAME="main Coverage Results" MODIFIED="1764247319614" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Markov_project$AIP_grid_tree_dfs.coverage" NAME="AIP_grid_tree_dfs Coverage Results" MODIFIED="1761838432485" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$USER_HOME$/Downloads" />
   </component>
 </project>

@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import StringVar
 
 import Maze
+import heuristic_markov
 
 
 class mazeGUI:
@@ -76,10 +77,10 @@ class mazeGUI:
 
         # dropdown to select algorithm
         # variable to hold the dropdown content
-        self.markov_var = tk.StringVar(value="Markov1")
+        self.markov_var = tk.StringVar(value="Heuristic")
 
         # list to hold the dropdown options
-        options = ["Markov1", "Markov2", "Markov3", "Markov4", "Markov5"]
+        options = ["Heuristic", "Markov2", "Markov3", "Markov4", "Markov5"]
 
         # the actual dropdown object
         self.markov_menu = tk.OptionMenu(self.row_one, self.markov_var, options[0], *options)
@@ -317,8 +318,8 @@ class mazeGUI:
             # get the markov algorithm from the dropdown
             markov_choice = self.markov_var.get()
 
-            if "lol" in markov_choice: # replace with an actual algorithm name
-                self.search_instance = None # placeholder
+            if "Heuristic" in markov_choice: # replace with an actual algorithm name
+                self.search_instance = heuristic_markov.heuristic_markov(self.layout) # placeholder
             else:
                 print(f"Algorithm {markov_choice} not implemented")
                 self.reset()
@@ -329,3 +330,94 @@ class mazeGUI:
 
             # call animation loop function for the first time
             self.run_search_step()
+
+    def run_search_step(self):
+        # stop the animation is search is stopped
+        if not self.search_started:
+            return
+
+        if self.paused:
+            self.root.after(1, self.run_search_step)
+        else:
+            try:
+                # get the next node from the search generator
+                current_node, text, execution_time = next(self.search_generator)
+                if text != "":
+                    self.info_text_display.set(f"{self.canvas_legend}\n{text}")
+                else:
+                    self.info_text_display.set(self.canvas_legend)
+
+                if current_node == None:
+                    self.search_started = False
+                    return
+                else:
+                    self.execution_time += execution_time
+
+                (x, y) = current_node
+
+                if self.last_node != self.start and self.last_node != self.end:
+                    if self.last_node_repeated:
+                        self.draw_cell_content(self.last_node[0], self.last_node[1], colour="orange")
+                        self.last_node_repeated = False
+                    else:
+                        self.draw_cell_content(self.last_node[0], self.last_node[1], colour="cyan")
+
+                if current_node != self.start and self.last_node != self.end:
+                    if current_node in self.visited:
+                        self.draw_cell_content(x, y, colour="red")
+                        self.last_node_repeated = True
+                    else:
+                        self.draw_cell_content(x, y, colour="blue")
+                        self.visited.append(current_node) if current_node not in self.visited else None
+                self.last_node = current_node
+
+                # check if reached goal
+                if current_node == self.end:
+                    self.search_started = False
+                    self.draw_final_path()
+                    self.markov_menu.config(state="normal")
+                    return
+
+                #schedule the next animation loop
+                if self.max_speed:
+                    self.root.after(1, self.run_search_step)
+                elif self.fast_forward:
+                    self.root.after(self.animation_delay // 2, self.run_search_step)
+                else:
+                    self.root.after(self.animation_delay, self.run_search_step)
+
+            except StopIteration:
+                self.search_started = False
+                self.markov_menu.config(state="normal")
+            except Exception as e:
+                self.info_text_display.set(f"{self.canvas_legend}\nAn error occurred:{e}")
+                self.search_started = False
+                self.markov_menu.config(state="normal")
+
+    def draw_final_path(self):
+
+        self.info_text_display.set(f"{self.canvas_legend}\nexecution time: {self.execution_time}")
+        path = self.search_instance.reconstruct_path()
+
+        if not path:
+            print("path reconstruction failed")
+            return
+
+        for i in range(len(path) - 1):
+            x_start, y_start = path[i]
+            x_end, y_end = path[i + 1]
+
+            # get the central pixel coord of the start cell
+            x0, y0, x1, y1 = self.get_canvas_coords(x_start, y_start)
+            start_center_x, start_center_y = (x0 + x1) / 2, (y0 + y1) / 2
+
+            # get the central pixel coord of the end cell
+            x0, y0, x1, y1 = self.get_canvas_coords(x_end, y_end)
+            end_center_x, end_center_y = (x0 + x1) / 2, (y0 + y1) / 2
+
+            # draw the line connecting the centres
+            self.canvas.create_line(start_center_x, start_center_y, end_center_x, end_center_y, fill="magenta", width=3)
+
+            # redraw start and end on top so the path line doesnt cover them
+            self.draw_cell_content(self.start[0], self.start[1], "S", "green")
+            self.draw_cell_content(self.end[0], self.end[1], "E", "red")
