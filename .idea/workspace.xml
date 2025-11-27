@@ -4,9 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0bfb6764-6f36-497e-8e07-ba0d496f7513" name="Changes" comment="implemented markov process for both heuristic and distance matrix methods">
-      <change beforePath="$PROJECT_DIR$/.idea/Markov_project.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Markov_project.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="0bfb6764-6f36-497e-8e07-ba0d496f7513" name="Changes" comment="comments and planning">
+      <change afterPath="$PROJECT_DIR$/mazeGUI.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Maze.py" beforeDir="false" afterPath="$PROJECT_DIR$/Maze.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
@@ -97,8 +96,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-3aa1da707db6-JavaScript-PY-252.26830.99" />
-        <option value="bundled-python-sdk-164cda30dcd9-0af03a5fa574-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-252.26830.99" />
+        <option value="bundled-js-predefined-d6986cc7102b-3aa1da707db6-JavaScript-PY-252.27397.106" />
+        <option value="bundled-python-sdk-4e2b1448bda8-9a97661f3031-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-252.27397.106" />
       </set>
     </attachedChunks>
   </component>
@@ -118,6 +117,9 @@
       <workItem from="1761836806742" duration="2709000" />
       <workItem from="1761844468237" duration="670000" />
       <workItem from="1761862716698" duration="3000" />
+      <workItem from="1763630591795" duration="2280000" />
+      <workItem from="1763635150891" duration="2000" />
+      <workItem from="1764234875301" duration="8742000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit">
       <option name="closed" value="true" />
@@ -143,7 +145,23 @@
       <option name="project" value="LOCAL" />
       <updated>1761819497110</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="comments and planning">
+      <option name="closed" value="true" />
+      <created>1763630882037</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1763630882037</updated>
+    </task>
+    <task id="LOCAL-00005" summary="comments and planning">
+      <option name="closed" value="true" />
+      <created>1763630885797</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1763630885797</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -153,11 +171,12 @@
     <MESSAGE value="initial commit" />
     <MESSAGE value="implemented dist matrix and heuristic method" />
     <MESSAGE value="implemented markov process for both heuristic and distance matrix methods" />
-    <option name="LAST_COMMIT_MESSAGE" value="implemented markov process for both heuristic and distance matrix methods" />
+    <MESSAGE value="comments and planning" />
+    <option name="LAST_COMMIT_MESSAGE" value="comments and planning" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Markov_project$Maze.coverage" NAME="Maze Coverage Results" MODIFIED="1761743835507" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/Markov_project$main.coverage" NAME="main Coverage Results" MODIFIED="1761836810788" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Markov_project$main.coverage" NAME="main Coverage Results" MODIFIED="1764243479777" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Markov_project$AIP_grid_tree_dfs.coverage" NAME="AIP_grid_tree_dfs Coverage Results" MODIFIED="1761838432485" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$USER_HOME$/Downloads" />
   </component>
 </project>

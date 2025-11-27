@@ -1,36 +1,56 @@
-# constants
+# Maze Class, defines the maze environment for pathfinding algorithms
+import os
+import random
 import warnings
-import heapq
 
 import Node
 
-class Maze:
 
-    Maze: list[list[Node.Node]] = []
-    dist: list[list[int]] = [] # will be initialized to -1
+class Maze:
+    # Instance variables
     startx: int
     starty: int
     endx: int
     endy: int
+    Maze: list[list[Node.Node]]
+    maze_height: int
+    maze_width: int
 
+    # Initialise the Maze object, given a 3D list defining walls and start/end coordinates
     def __init__(self, maze: list[list[list[bool]]], startx: int, starty: int, endx: int, endy: int):
-
+        # Check that start and end positions are not the same
         if startx == endx and starty == endy:
             raise ValueError("Start and End nodes cannot be the same")
 
+        # Get maze dimensions
+        self.maze_height = len(maze)
+        self.maze_width = len(maze[0]) if self.maze_height > 0 else 0
+
+        # Boundary check for start position
+        if startx >= self.maze_width or startx < 0 or starty >= self.maze_height or starty < 0:
+            raise ValueError(f"Start position ({startx}, {starty}) is out of bounds for a {self.maze_width}x{self.maze_height} maze.")
+
+        # Store start and end coordinates
         self.startx = startx
         self.starty = starty
         self.endx = endx
         self.endy = endy
 
-        for i in range(len(maze)):
-            self.Maze.append([])
-            self.dist.append([])
-            for j in range(len(maze[i])):
-                self.Maze[i].append(Node.Node(i, j, maze[i][j][0], maze[i][j][1], maze[i][j][2], maze[i][j][3]))
-                self.dist[i].append(-1)
+        # Initialise the maze structure as instance variable, a 2D list of Node objects
+        self.Maze: list[list[Node.Node]] = []
 
-        self.dist_init()
+        # Loop over rows
+        for y_coord in range(self.maze_height):
+            row_list = []
+            # Loop over columns
+            for x_coord in range(self.maze_width):
+                # Get the wall data for this cell, a list of 4 booleans; up, down, left, right
+                wall_data = maze[y_coord][x_coord]
+
+                # Create Node with the wall data and coordinates, add to the current row
+                row_list.append(Node.Node(x_coord, y_coord, wall_data[0], wall_data[1], wall_data[2], wall_data[3]))
+            self.Maze.append(row_list)
+
         # raise a warning if start and/or end node is placed in isolated coord
         # no i am not integrating a search algorithm just to check can the 2 reach each other thats the point of the project lmao
         if self.Maze[starty][startx].is_isolated():
@@ -38,209 +58,171 @@ class Maze:
         if self.Maze[endy][endx].is_isolated():
             warnings.warn("End node is isolated")
 
+        # Pah to store the found path
+        self.path = []
+        self.path_dirs = {}
+
+    # Set the path found by a search algorithm
+    def set_path(self, path: list[tuple[int, int]]):
+        # Stores a found path
+        self.path = path
+        # Converts the path into a dictionary
+        self.path_dirs = {}
+        # Loop through the path to determine directions
+        for i in range(len(path) - 1):
+            x1, y1 = path[i]
+            x2, y2 = path[i + 1]
+            if x2 == x1 + 1:
+                self.path_dirs[(x1, y1)] = '→'
+            elif x2 == x1 - 1:
+                self.path_dirs[(x1, y1)] = '←'
+            elif y2 == y1 + 1:
+                self.path_dirs[(x1, y1)] = '↓'
+            elif y2 == y1 - 1:
+                self.path_dirs[(x1, y1)] = '↑'
+
     def get_maze_x(self):
-        return len(self.Maze[0])
+        # Getter for maze width, note it start counting from 1
+        return self.maze_width
+
     def get_maze_y(self):
-        return len(self.Maze)
-    def traversable(self, x1: int, y1: int, x2: int, y2: int): # x1 y1 being source and x2 y2 being dest, THIS IS A ONE WAY CHECKER
-        if abs(x1 - x2 + y1 - y2) == 1: # check if they are 1 apart, if not return false
-            if abs(x1 - x2) == 1: # check if they are 1 apart on the x axis, if not then its y axis
+        # Getter for maze height, note it start counting from 1
+        return self.maze_height
+
+    # Check if movement from one node to another is traversable
+    def traversable(self, x1: int, y1: int, x2: int, y2: int):
+        # Check if two nodes are adjacent and if movement between them is possible
+        if abs(x1 - x2 + y1 - y2) == 1:
+            if abs(x1 - x2) == 1:
                 if x1 > x2:
+                    # Movinf left
                     return self.Maze[y1][x1].get_left()
                 else:
+                    # Moving right
                     return self.Maze[y1][x1].get_right()
             else:
                 if y1 > y2:
+                    # Moving up
                     return self.Maze[y1][x1].get_up()
                 else:
+                    # Moving down
                     return self.Maze[y1][x1].get_down()
         else:
             return False
 
-    def get_neighbors(self, x: int, y: int) -> list[tuple[int, int]]:
-        output = []
-        maze_x = self.get_maze_x()
-        maze_y = self.get_maze_y()
+    # Get the traversable directions array for a node
+    def get_traversable_array(self, x, y) -> list[bool]:
+        return [self.Maze[y][x].get_up(), self.Maze[y][x].get_down(), self.Maze[y][x].get_left(),
+                self.Maze[y][x].get_right()]
 
-        if y > 0 and self.traversable(x, y, x, y - 1):
-            output.append((x, y - 1))
-        if y < maze_y - 1 and self.traversable(x, y, x, y + 1):
-            output.append((x, y + 1))
-        if x > 0 and self.traversable(x, y, x - 1, y):
-            output.append((x - 1, y))
-        if x < maze_x - 1 and self.traversable(x, y, x + 1, y):
-            output.append((x + 1, y))
-        return output
-
+    # Print the node at (x, y) for debugging
     def print_node(self, x, y):
         print(self.Maze[y][x])
 
+    # Check if (x, y) is the start node
     def is_start(self, x, y):
         return x == self.startx and y == self.starty
 
+    # Check if (x, y) is the end node
     def is_end(self, x, y):
         return x == self.endx and y == self.endy
 
-    def dist_init(self):
-        self.dist[self.endy][self.endx] = 0
+    # randomizes the maze
+    def randomize(self, wall_percentage, oneway_percentage, force_start_end_split=True):
 
-        def set_dist(dist, x, y): # up
-            if y != 0:
-                if self.dist[y - 1][x] == -1: # check is traversed already
-                    if self.traversable(x, y - 1, x, y): # check if above block can travel down
-                        self.dist[y - 1][x] = dist + 1
-                        set_dist(dist + 1, x, y - 1) # recurse into the bloc above
+        if wall_percentage + oneway_percentage > 100: # obviously thats not allowed lol
+            raise ValueError("given percentages added up to over 100%")
 
-            if y != len(self.Maze) - 1: # down
-                if self.dist[y + 1][x] == -1:
-                    if self.traversable(x, y + 1, x, y):
-                        self.dist[y + 1][x] = dist + 1
-                        set_dist(dist + 1, x, y + 1)
+        # works slightly differently between windows and linux, tho the differences should not matter here
+        random.seed(os.urandom(10))
 
-            if x != 0: # left
-                if self.dist[y][x - 1] == -1:
-                    if self.traversable(x - 1, y, x, y):
-                        self.dist[y][x - 1] = dist + 1
-                        set_dist(dist + 1, x - 1, y)
+        up_or_down_rng = True if random.randint(1, 100) < 50 else False
+        self.startx = random.randint(0, self.maze_width - 1)
+        self.starty = 0 if up_or_down_rng else self.maze_height - 1 if force_start_end_split else random.randint(0, self.maze_height - 1)
+        self.endx = random.randint(0, self.maze_width - 1)
+        self.endy = self.maze_height - 1 if up_or_down_rng else 0 if force_start_end_split else random.randint(0, self.maze_height - 1)
 
-            if x != len(self.Maze[y]) - 1: # down
-                if self.dist[y][x + 1] == -1:
-                    if self.traversable(x + 1, y, x, y):
-                        self.dist[y][x + 1] = dist + 1
-                        set_dist(dist + 1, x + 1, y)
+        for y in range(len(self.Maze)):
+            for x in range(len(self.Maze[y])): # each iteration only modifies the bloc below and right
+                on_border = x == len(self.Maze[y]) - 1 or y == len(self.Maze) - 1 # if true the loop below only run once and will only modify down
+                for k in range(2):
+                    rngNumber = random.randint(1, 100)
+                    if 101 - oneway_percentage < rngNumber: # one way case, having 50% chance to go either way
+                        if random.randint(0, 100) < 50: # up/left
+                            if on_border and y != len(self.Maze) - 1: # up
+                                self.Maze[y][x].down = False
+                                self.Maze[y + 1][x].up = True
+                            elif x != len(self.Maze[y]) - 1: # left
+                                self.Maze[y][x].right = False
+                                self.Maze[y][x + 1].left = True
+                        else: # down/right
+                            if on_border and y != len(self.Maze) - 1:  # down
+                                self.Maze[y][x].down = True
+                                self.Maze[y + 1][x].up = False
+                            elif x != len(self.Maze[y]) - 1:  # right
+                                self.Maze[y][x].right = True
+                                self.Maze[y][x + 1].left = False
+                    elif 101 - oneway_percentage - wall_percentage < rngNumber <= 100 - oneway_percentage: # wall case
+                        if on_border and y != len(self.Maze) - 1:
+                            self.Maze[y][x].down = False
+                            self.Maze[y + 1][x].up = False
+                        elif x != len(self.Maze[y]) - 1:
+                            self.Maze[y][x].right = False
+                            self.Maze[y][x + 1].left = False
+                    else: # open path case
+                        if on_border and y != len(self.Maze) - 1:  # up
+                            self.Maze[y][x].down = True
+                            self.Maze[y + 1][x].up = True
+                        elif x != len(self.Maze[y]) - 1:  # left
+                            self.Maze[y][x].right = True
+                            self.Maze[y][x + 1].left = True
 
-        set_dist(0, self.endx, self.endy)
-
-    def markov_traverse_heuristic(self, display_decision: bool = False):
-        # implement a "bot" that decides how to traverse a maze based on given reward functions
-            # 1. using heuristic functions, backtracking if there is a deadend
-            # 2. using the generated distance matrix, where number meaning distance to the end (essentially making this a weird implementation of BFS)
-        # print each step along the way along with the decision table with a bool to switch this output on or off
-
-        # heuristic implementation
-        # always go the bloc closer to the goal
-        # backtrack to the branching bloc closest to the goal when in deadend
-
-        to_visit: list[tuple[int, int]] = []
-        visited: list[tuple[int, int]] = []
-        counter = 0
-
-        current_node = (self.startx, self.starty)
-
-        def heuristic(x1, y1, x2, y2) -> int:  # this is not a diagonal distance so it will be int
-            return abs(x1 - x2) + abs(y1 - y2)
-
-        print("Heuristic method")
-
-        while True:
-
-            counter += 1
-            visited.append(current_node)
-            # current_dist: int = self.heuristic(current_node[0], current_node[1], self.endx, self.endy)
-
-            policies: list[tuple[int, tuple[int, int]]] = []
-            neighbors = self.get_neighbors(current_node[0], current_node[1])
-            for coord in neighbors:
-                if coord not in visited:
-                    # in this case the reward is the next coord's distance to the goal
-                    # therefore the "bot" would prioritise a LOWER reward value
-                    heapq.heappush(policies, (heuristic(coord[0], coord[1], self.endx, self.endy), (coord[0], coord[1])))
-
-            if display_decision:
-                print(f"currently at {current_node[0]}, {current_node[1]}, available policies:")
-                if policies:
-                    for policy in policies:
-                        print(f"reward: {policy[0]}\tnode: {policy[1][0]}, {policy[1][1]}")
-                else:
-                    print("no available policies")
-
-            if policies: # check if any valid policies are found
-                if display_decision:
-                    reward, next_node = heapq.heappop(policies)
-                    print(f"chosen policy: node: {next_node[0]}, {next_node[1]}\treward: {reward}\n")
-                else:
-                    _, next_node = heapq.heappop(policies) # get one with the highest reward
-
-                for _, coords in policies: # reward is ditched here as its irrelevant
-                    heapq.heappush(to_visit, (heuristic(coords[0], coords[1], self.endx, self.endy), coords))
-
-                current_node = next_node
-
-                if next_node == (self.endx, self.endy):
-                    return f"Markov traverse with heuristic reward function found the goal in {counter} tries\n" if display_decision else counter
-
-            elif to_visit: # if no valid policies exist
-                if display_decision:
-                    dist, current_node = heapq.heappop(to_visit)  # backtrack to the node not visited previously that is closest in distance to the goal
-                    print(f"backtracking to lowest distance open node {current_node[0]}, {current_node[1]}\n")
-            else: # if both policies and to_visit is empty that means all paths had been traversed
-                return "Markov traverse failed to find goal\n" if display_decision else None
-
-    def markov_traverse_distance_matrix(self, display_decision: bool = False):
-
-        # distance matrix implementation
-        # get the distance values of traversable blocs
-        # "bot" will always choose the lowest value
-        # meaning it should not need to backtrack
-
-        current_node = (self.startx, self.starty)
-        counter = 0
-
-        print("Distance Matrix method")
-
-        while True:
-
-            counter += 1
-
-            policies: list[tuple[int, tuple[int, int]]] = []
-            neighbors = self.get_neighbors(current_node[0], current_node[1])
-            for coord in neighbors:
-                # in this case the reward is the next coord's distance to the goal
-                # therefore the "bot" would prioritise a LOWER reward value
-                heapq.heappush(policies, (self.dist[coord[1]][coord[0]], (coord[0], coord[1])))
-
-            if display_decision:
-                print(f"currently at {current_node[0]}, {current_node[1]}, available policies:")
-                if policies:
-                    for policy in policies:
-                        print(f"reward: {policy[0]}\tnode: {policy[1][0]}, {policy[1][1]}")
-                else:
-                    print("no available policies")
-
-            if policies:  # check if any valid policies are found
-                if display_decision:
-                    reward, next_node = heapq.heappop(policies)
-                    print(f"chosen policy: node: {next_node[0]}, {next_node[1]}\treward: {reward}\n")
-                else:
-                    _, next_node = heapq.heappop(policies)  # get one with the highest reward
-
-                current_node = next_node
-
-                if next_node == (self.endx, self.endy):
-                    return f"Markov traverse with distance matrix function found the goal in {counter} tries\n" if display_decision else counter
+                    if on_border:
+                        break
+                    else:
+                        on_border = True
 
     def __str__(self):
+
         # the tostring function of the maze
         # basically prints the maze out in shitty ascii chars
         # note the maze can theoretically support one way paths so i added them in and used arrows to display them
         # and an open space means u can go both ways
-        output = "-----------------------------------------\n"
 
+        output = "-"
+        for _ in self.Maze[0]:
+            output += "----"
+        output += "\n"
+
+        # ANSI code for pink
+        PINK = "\033[95m"
+        # ANSI code for setting colour back to normal
+        RESET = "\033[0m"
+
+        # Helper function to check what to display in a cell
         def check_space(x, y) -> str:
             if self.is_start(x, y):
                 return "s "
             elif self.is_end(x, y):
                 return "e "
+            elif (x, y) in self.path_dirs:
+                return f"{PINK}{self.path_dirs[(x, y)]}{RESET} "
             else:
                 return "  "
 
+        # Loop over rows
         for row in range(len(self.Maze)):
+            # Start of the row
             output += "| " + check_space(0, row)
+
+            # Loop over columns
             for col in range(len(self.Maze[row])):
-                # check for block to the right, skip if on right most block
-                if col < len(self.Maze[row]) - 1: # left right
+                # check for block to the right skip if on right most block
+                if col < len(self.Maze[row]) - 1:
+                    # Check for two way paths
                     right = self.traversable(col, row, col + 1, row)
                     left = self.traversable(col + 1, row, col, row)
+
                     if right and left:
                         output += "  "
                     elif right and not left:
@@ -254,12 +236,15 @@ class Maze:
                 else:
                     output += "|\n"
 
+            # Draw the bottom walls for the current row
             for col in range(len(self.Maze[row])):
                 # check for block below, skip if on bottom row
                 if row < len(self.Maze) - 1:
                     output += "-"
+                    # Check for two way paths
                     down = self.traversable(col, row, col, row + 1)
                     up = self.traversable(col, row + 1, col, row)
+
                     if down and up:
                         output += "   "
                     elif down and not up:
@@ -271,11 +256,6 @@ class Maze:
                 else:
                     output += "----"
             output += "-\n"
+
+        # Add the legend at the end
         return output + "Start: s\tEnd: e\tOne way paths: arrows\n"
-
-    def print_dist(self):
-        output = str(self.dist[0]) + "\n"
-        for row in range(1, len(self.dist)):
-            output += str(self.dist[row]) + "\n"
-
-        return output
