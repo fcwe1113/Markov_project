@@ -27,7 +27,7 @@ class qlearning_markov:
         self.maze = maze
         self.start = (maze.startx, maze.starty)
         self.end = (maze.endx, maze.endy)
-        self.pathing = [self.start]
+        self.astar_pathing = [self.start]
         self.queue = [(self.heuristic(self.start[0], self.start[1]), self.start)]
         self.experience = [[1 for x in range(self.maze.get_maze_x())] for y in range(maze.get_maze_y())]
         self.learn_start = (rng.randint(0, self.maze.get_maze_x() - 1), rng.randint(0, self.maze.get_maze_y() - 1))
@@ -56,8 +56,9 @@ class qlearning_markov:
     def reset(self):
         self.execution_time = 0
         self.count = 0
-        self.parent_map = {self.start: None}  # dont do this is allowing revisiting nodes
-        self.pathing = [self.start]
+        self.parent_map = {}  # dont do this is allowing revisiting nodes
+        self.parent_map[self.start] = None
+        self.astar_pathing = [self.start]
         self.visited = []
         self.queue = [(self.heuristic(self.start[0], self.start[1]), self.start)]
         self.to_be_reset = False
@@ -113,6 +114,8 @@ class qlearning_markov:
         start_time = time.time_ns()
         self.parent_map[self.start] = None
         self.visited = []
+        self.parent_map = {}
+        self.parent_map[self.start] = None
 
         while self.queue: # todo put learning in while loop
 
@@ -136,6 +139,7 @@ class qlearning_markov:
 
                 self.queue = [(0, self.start)]
                 self.learning = False
+                self.visited = []
 
             # get the closest node as current node
             current_dist, current_node = heapq.heappop(self.queue)
@@ -152,14 +156,21 @@ class qlearning_markov:
             else:
                 for i in range(len(policies)):
                     (_, policy) = policies[i]
-                    output += f"node: {str(policy[0])}\tdirection: {policy[1]}\tdistance: {policy[2]} + experience: {policy[3]} = sum: {round(policy[2] + policy[3], 2)}\n"
+                    if self.run_num == 1:
+                        output += f"node: {str(policy[0])}\tdirection: {policy[1]}\tdistance: {policy[2]} + experience: {policy[3]} = sum: {round(policy[2] + policy[3], 2)}\n"
+                    else:
+                        output += f"node: {str(policy[0])}\tdirection: {policy[1]}\texperience: {policy[3]}\n"
 
             # yield data to the gui
             if current_node == self.end:
-                yield current_node, f"goal reached after {self.count} iterations", time.time_ns() - start_time + self.execution_time, self.experience
-                self.learning = True
-                self.reset()
-                policies = []
+                if self.run_num == 1:
+                    yield current_node, f"goal reached after {self.count} iterations", time.time_ns() - start_time + self.execution_time, self.experience
+                    self.astar_pathing = self.reconstruct_path()
+                    self.learning = True if self.run_num == 1 else self.learning
+                    self.reset()
+                    policies = []
+                else:
+                    yield current_node, f"goal reached after {self.count} iterations", time.time_ns() - start_time + self.execution_time, self.experience
             else:
                 yield current_node, f"current node: {current_node}   current distance to goal: {current_dist}\n{output}", self.execution_time, self.experience
 
@@ -172,13 +183,18 @@ class qlearning_markov:
                         break
 
                 if not skip:
-                    heapq.heappush(self.queue, (weight, policy[0]))
+                    if self.run_num == 1:
+                        heapq.heappush(self.queue, (weight, policy[0]))
+                    else:
+                        heapq.heappush(self.queue, (-policy[3], policy[0]))
 
 
         self.execution_time = time.time_ns() - start_time # todo double check this functionality
 
         # yield for GUI if no path found
         yield None, "Path not found", 0, 0
+
+
 
     def learn(self, coord):
 

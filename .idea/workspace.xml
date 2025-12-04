@@ -4,12 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0bfb6764-6f36-497e-8e07-ba0d496f7513" name="Changes" comment="added experience matrix and iterations into GUI to enable algorithm to accumulate &quot;experience&quot;">
-      <change afterPath="$PROJECT_DIR$/qLearning_markov.py" afterDir="false" />
+    <list default="true" id="0bfb6764-6f36-497e-8e07-ba0d496f7513" name="Changes" comment="done qlearning">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Maze.py" beforeDir="false" afterPath="$PROJECT_DIR$/Maze.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/heuristic_markov.py" beforeDir="false" afterPath="$PROJECT_DIR$/heuristic_markov.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mazeGUI.py" beforeDir="false" afterPath="$PROJECT_DIR$/mazeGUI.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/qLearning_markov.py" beforeDir="false" afterPath="$PROJECT_DIR$/qLearning_markov.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -126,7 +124,8 @@
       <workItem from="1764335842867" duration="561000" />
       <workItem from="1764336933671" duration="2258000" />
       <workItem from="1764612679237" duration="11000" />
-      <workItem from="1764837626752" duration="16957000" />
+      <workItem from="1764837626752" duration="22310000" />
+      <workItem from="1764867608129" duration="975000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit">
       <option name="closed" value="true" />
@@ -200,7 +199,15 @@
       <option name="project" value="LOCAL" />
       <updated>1764266292168</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="done qlearning">
+      <option name="closed" value="true" />
+      <created>1764862300748</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1764862300748</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -215,7 +222,8 @@
     <MESSAGE value="implemented a*" />
     <MESSAGE value="added random noise and implemented available policies output" />
     <MESSAGE value="added experience matrix and iterations into GUI to enable algorithm to accumulate &quot;experience&quot;" />
-    <option name="LAST_COMMIT_MESSAGE" value="added experience matrix and iterations into GUI to enable algorithm to accumulate &quot;experience&quot;" />
+    <MESSAGE value="done qlearning" />
+    <option name="LAST_COMMIT_MESSAGE" value="done qlearning" />
   </component>
   <component name="XDebuggerManager">
     <watches-manager>
@@ -227,7 +235,7 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Markov_project$Maze.coverage" NAME="Maze Coverage Results" MODIFIED="1761743835507" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/Markov_project$main.coverage" NAME="main Coverage Results" MODIFIED="1764861517237" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Markov_project$main.coverage" NAME="main Coverage Results" MODIFIED="1764868582392" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Markov_project$AIP_grid_tree_dfs.coverage" NAME="AIP_grid_tree_dfs Coverage Results" MODIFIED="1761838432485" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$USER_HOME$/Downloads" />
   </component>
 </project>

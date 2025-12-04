@@ -301,7 +301,6 @@ class mazeGUI:
         self.start = (self.layout.startx, self.layout.starty)
         self.end = (self.layout.endx, self.layout.endy)
         self.reset()
-        self.draw_map()
         # print(self.maze)
 
     def reset(self):
@@ -420,12 +419,18 @@ class mazeGUI:
                             self.root.after(1000, self.run_search_step, self.iterations.get())
                             return
                     elif self.markov_var.get() == "Q-learning":
+                        if not self.pathings:
+                            self.visited = []
+                            self.visited_again = []
+                            self.qlearning = True
+                            self.root.after(1000, self.run_search_step, self.iterations.get())
                         self.pathings.append(self.search_instance.reconstruct_path())
                         self.draw_final_path()
-                        self.visited = []
-                        self.visited_again = []
-                        self.qlearning = True
-                        self.root.after(1000, self.run_search_step, self.iterations.get())
+                        if len(self.pathings) == 2:
+                            self.markov_menu.config(state="normal")
+                        return
+
+
 
                 #schedule the next animation loop
                 if self.max_speed:
@@ -474,13 +479,20 @@ class mazeGUI:
 
         draw_path(path, "magenta")
         idd = 0
-        if self.iterations.get() == self.run_num:
-            min_length = len(self.pathings[0])
-            for i in range(1, len(self.pathings)):
-                if len(self.pathings[i]) < min_length:
-                    idd = i
-                    min_length = len(self.pathings[i])
+        if self.markov_var.get() == "Q-learning":
+            if len(self.pathings) == 2:
+                draw_path(self.pathings[0], "purple")
+                self.info_text_display.set(
+                    f"{self.canvas_legend}\nexecution time: {self.execution_time / 1000000} milliseconds\nA* path length: {len(self.pathings[0])}   Q-learning path length: {len(path)}")
 
-            path = self.pathings[idd]
-            draw_path(path, "purple")
-            self.info_text_display.set(f"{self.canvas_legend}\nexecution time: {self.execution_time / 1000000} milliseconds\nbest path found to be {len(path)} steps from iteration {idd + 1}")
+        elif self.markov_var.get() == "Custom":
+            if self.iterations.get() == self.run_num:
+                min_length = len(self.pathings[0])
+                for i in range(1, len(self.pathings)):
+                    if len(self.pathings[i]) < min_length:
+                        idd = i
+                        min_length = len(self.pathings[i])
+
+                path = self.pathings[idd]
+                draw_path(path, "purple")
+                self.info_text_display.set(f"{self.canvas_legend}\nexecution time: {self.execution_time / 1000000} milliseconds\nbest path found to be {len(path)} steps from iteration {idd + 1}")
