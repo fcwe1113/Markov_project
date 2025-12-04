@@ -53,6 +53,7 @@ class mazeGUI:
         self.oneway_percentage = tk.IntVar(value=10) # probability (in %) for oneways to appear in a block border
         self.iterations = tk.IntVar(value=30) # set the iterations the algorithm will run before aggregating an answer
         self.run_num = 1
+        self.qlearning_iters = tk.IntVar(value=500) # set the iterations q learning will run
 
         # markov process to use
         self.search_instance = None
@@ -78,9 +79,11 @@ class mazeGUI:
         # NOTE: they kind of function like rows hence their name
         self.row_one = tk.Frame(self.root)
         self.row_two = tk.Frame(self.root)
+        self.row_three = tk.Frame(self.root)
         # pack the frames(rows) with some vertical padding
         self.row_one.pack(pady=10)
         self.row_two.pack(pady=10)
+        self.row_three.pack(pady=10)
 
         # LINE 1
         # label for dropdown menu
@@ -153,6 +156,27 @@ class mazeGUI:
         self.oneway_slider.pack(side="left", padx=5)  # item 5 is slider 2
 
         self.oneway_slider_display.pack(side="left", padx=5)  # item 6 is slider 2 display
+        # ROW 2 END
+
+        # ROW 3
+        # custom iteration slider label
+        self.custom_iter_label = tk.Label(self.row_three, text="Custom iterations:")
+        self.custom_iter_label.pack(side="left", padx=5)
+
+        # custom iteration slider
+        self.custom_iter_slider = tk.Scale(self.row_three, orient="horizontal", from_=3, to=50, command=self.update_sliders)
+        self.custom_iter_slider.set(self.iterations.get())
+        self.custom_iter_slider.pack(side="left", padx=5)
+
+        # q learning iteration slider
+        self.qlearning_iter_label = tk.Label(self.row_three, text="Q-learning iterations:")
+        self.qlearning_iter_label.pack(side="left", padx=5)
+
+        # q learning iteration slider
+        self.qlearning_iter_slider = tk.Scale(self.row_three, orient="horizontal", from_=20, to=1000, command=self.update_sliders)
+        self.qlearning_iter_slider.set(self.qlearning_iters.get())
+        self.qlearning_iter_slider.pack(side="left", padx=5)
+        # ROW 3 END
 
         # canvas setup
         # convert the maze dimensions into grid units
@@ -265,6 +289,8 @@ class mazeGUI:
         # updates the percentage variable with the slider
         self.wall_percentage = int(self.wall_slider.get())
         self.oneway_percentage = int(self.oneway_slider.get())
+        self.iterations.set(int(self.custom_iter_slider.get()))
+        self.qlearning_iters.set(int(self.qlearning_iter_slider.get()))
 
         # update slider 1 and its display
         self.wall_slider_display.config(text=f"{self.wall_percentage}%")
@@ -351,7 +377,7 @@ class mazeGUI:
             if "Custom" == markov_choice: # replace with an actual algorithm name
                 self.search_instance = heuristic_markov.heuristic_markov(self.layout) # placeholder
             elif "Q-learning" == markov_choice:
-                self.search_instance = qLearning_markov.qlearning_markov(self.layout)
+                self.search_instance = qLearning_markov.qlearning_markov(self.layout, self.qlearning_iters.get())
             else:
                 print(f"Algorithm {markov_choice} not implemented")
                 self.reset()

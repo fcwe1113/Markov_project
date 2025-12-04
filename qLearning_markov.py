@@ -15,11 +15,10 @@ class qlearning_markov:
     to_be_reset: bool = False
     parent_map: dict = {}
     visited: list = []
-    iterations: int = 500
     learning: bool = False
     run_num: int = 1
 
-    def __init__(self, maze: Maze):
+    def __init__(self, maze: Maze, iterations: int = 500):
 
         rng = random.Random()
 
@@ -31,6 +30,7 @@ class qlearning_markov:
         self.queue = [(self.heuristic(self.start[0], self.start[1]), self.start)]
         self.experience = [[1 for x in range(self.maze.get_maze_x())] for y in range(maze.get_maze_y())]
         self.learn_start = (rng.randint(0, self.maze.get_maze_x() - 1), rng.randint(0, self.maze.get_maze_y() - 1))
+        self.iterations = iterations
 
     def heuristic(self, x, y):
         return abs(x - self.end[0]) + abs(y - self.end[1])
@@ -112,7 +112,6 @@ class qlearning_markov:
 
     def run(self):
         start_time = time.time_ns()
-        self.parent_map[self.start] = None
         self.visited = []
         self.parent_map = {}
         self.parent_map[self.start] = None

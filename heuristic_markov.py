@@ -59,8 +59,9 @@ class heuristic_markov:
 
     def run(self):
         start_time = time.time_ns()
-        self.parent_map[self.start] = None
         self.visited = []
+        self.parent_map = {}
+        self.parent_map[self.start] = None
 
         while self.queue:
             # get the closest node as current node
