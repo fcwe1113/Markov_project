@@ -137,9 +137,18 @@ class Maze:
         random.seed(os.urandom(10))
 
         up_or_down_rng = True if random.randint(1, 100) < 50 else False
-        self.startx = random.randint(0, self.maze_width - 1)
+        left_or_right_rng = True if random.randint(1, 100) < 50 else False
+        if force_start_end_split:
+            if left_or_right_rng:
+                self.startx = random.randint(0, self.maze_width // 2 - 1)
+                self.endx = random.randint(self.maze_width // 2 + 1, self.maze_width - 1)
+            else:
+                self.startx = random.randint(self.maze_width // 2 + 1, self.maze_width - 1)
+                self.endx = random.randint(0, self.maze_width // 2 - 1)
+        else:
+            self.startx = random.randint(0, self.maze_width - 1)
+            self.endx = random.randint(0, self.maze_width - 1)
         self.starty = 0 if up_or_down_rng else self.maze_height - 1 if force_start_end_split else random.randint(0, self.maze_height - 1)
-        self.endx = random.randint(0, self.maze_width - 1)
         self.endy = self.maze_height - 1 if up_or_down_rng else 0 if force_start_end_split else random.randint(0, self.maze_height - 1)
 
         for y in range(len(self.Maze)):

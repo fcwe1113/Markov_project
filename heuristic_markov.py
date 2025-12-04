@@ -4,42 +4,63 @@ import time
 
 import Maze
 
-
-# add noise
-    # apply randomness to each weight decision to eliminate deterministic behaviour
-    # like a random number to add to each weight for the bot to be able to make bad decisions
-# make the maze larger
-# make a experience matrix for each maze bloc
-    # as a kind of "learning" showing which bloc gave a more positive experience for reaching the goal
-# current weight formula: given_weight + random_value(different for each option) + experience_value(if any)
-
-# make it so every node visited but not used in final path get a weight penalty
-
 class heuristic_markov:
+
+    count: int = 0
+    execution_time: int = 0
+    max_random: int = 20
+    lowest_step: int = None
+    to_be_reset: bool = False
+    parent_map: dict = {}
+    visited: list = []
 
     def __init__(self, maze: Maze.Maze, learning_offset = 5):
 
         # variables
-        self.count = 0
-        self.execution_time = 0
         self.maze = maze
         self.start = (maze.startx, maze.starty)
         self.end = (maze.endx, maze.endy)
-        self.parent_map = {} # dont do this is allowing revisiting nodes
         self.pathing = [self.start]
-        self.lowest_step = None
-        self.max_random = 20 # for now keep it under 10
         self.queue = [(self.heuristic(self.start[0], self.start[1]), self.start)]
-        self.visited = []
         self.experience = [[0 for x in range(self.maze.get_maze_x())] for y in range(maze.get_maze_y())]
-        self.to_be_reset = False
         self.learning_offset = learning_offset
+
+    def get_policies(self, current_node):
+        policies = []
+        neighbors = self.maze.get_traversable_array(current_node[0], current_node[1])
+        rng = random.Random()
+
+        for y in range(len(neighbors)):
+            dir = ""
+            if neighbors[y]:
+                if y == 0:  # up
+                    next_node = (current_node[0], current_node[1] - 1)
+                    dir = "up"
+                elif y == 1:  # down
+                    next_node = (current_node[0], current_node[1] + 1)
+                    dir = "down"
+                elif y == 2:  # left
+                    next_node = (current_node[0] - 1, current_node[1])
+                    dir = "left"
+                else:  # right
+                    next_node = (current_node[0] + 1, current_node[1])
+                    dir = "right"
+
+                if not next_node in self.visited or next_node == self.end:
+                    if next_node not in self.parent_map:
+                        self.parent_map[next_node] = current_node
+
+                    if not neighbors in self.visited and not (self.heuristic(next_node[0], next_node[1]), next_node) in self.queue:
+                        random_float = rng.uniform(0, self.max_random)
+                        # add more shit here when necessary
+                        heapq.heappush(policies, (self.heuristic(next_node[0], next_node[1]) + random_float + self.experience[next_node[1]][next_node[0]], [next_node, dir, self.heuristic(next_node[0], next_node[1]), self.experience[next_node[1]][next_node[0]], random_float]))
+
+        return policies
 
     def run(self):
         start_time = time.time_ns()
         self.parent_map[self.start] = None
         self.visited = []
-        rng = random.Random()
 
         while self.queue:
             # get the closest node as current node
@@ -48,32 +69,7 @@ class heuristic_markov:
             self.visited.append(current_node)
 
             # get policies
-            policies = []
-            neighbors = self.maze.get_traversable_array(current_node[0], current_node[1])
-            for y in range(len(neighbors)):
-                dir = ""
-                if neighbors[y]:
-                    if y == 0:  # up
-                        next_node = (current_node[0], current_node[1] - 1)
-                        dir = "up"
-                    elif y == 1:  # down
-                        next_node = (current_node[0], current_node[1] + 1)
-                        dir = "down"
-                    elif y == 2:  # left
-                        next_node = (current_node[0] - 1, current_node[1])
-                        dir = "left"
-                    else:  # right
-                        next_node = (current_node[0] + 1, current_node[1])
-                        dir = "right"
-
-                    if not next_node in self.visited or next_node == self.end:
-                        if next_node not in self.parent_map:
-                            self.parent_map[next_node] = current_node
-
-                        if not neighbors in self.visited and not (self.heuristic(next_node[0], next_node[1]), next_node) in self.queue:
-                            random_float = rng.uniform(0, self.max_random)
-                            # add more shit here when necessary
-                            heapq.heappush(policies, (self.heuristic(next_node[0], next_node[1]) + random_float, [next_node, dir, self.heuristic(next_node[0], next_node[1]), self.experience[next_node[1]][next_node[0]], random_float]))
+            policies = self.get_policies(current_node)
 
             # policies to string
             output = "Available policies (lowest weight will be picked):\n"
@@ -156,3 +152,10 @@ class heuristic_markov:
         for tup in self.visited:
             if tup not in pathing:
                 self.experience[tup[1]][tup[0]] += self.learning_offset
+
+    def q_learn(self, x0, y0, x1, y1, alpha = 1, discount = 0.9):
+        # the q learning algorithm adapted to the program (to the best of my ability)
+        # im not happy with the future cost part of the algorithm but thats something i can do right now without doing recursion jank
+        # this basically means that it takes a few iterations to "boot up"
+
+        self.experience[y0][x0] += alpha * (self.heuristic(x1, y1) - self.heuristic(x0, y0) + discount * self.experience[y1][x1] - self.experience[y0][x0])

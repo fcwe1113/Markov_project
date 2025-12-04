@@ -3,6 +3,7 @@ from tkinter import StringVar
 
 import Maze
 import heuristic_markov
+import qLearning_markov
 
 
 class mazeGUI:
@@ -50,7 +51,7 @@ class mazeGUI:
         # for obvious reasons dont set them too high unless you hate yourself
         self.wall_percentage = tk.IntVar(value=10) # probability (in %) for walls to appear in a block border
         self.oneway_percentage = tk.IntVar(value=10) # probability (in %) for oneways to appear in a block border
-        self.iterations = tk.IntVar(value=20)
+        self.iterations = tk.IntVar(value=30) # set the iterations the algorithm will run before aggregating an answer
         self.run_num = 1
 
         # markov process to use
@@ -66,6 +67,8 @@ class mazeGUI:
         self.fast_forward = False
         # flag to show max speed
         self.max_speed = False
+        # flag to signify q learning process
+        self.qlearning = False
 
         # GUI setup
         # set window title
@@ -81,15 +84,16 @@ class mazeGUI:
 
         # LINE 1
         # label for dropdown menu
-        self.markovs_label = tk.Label(self.row_one, text="Algorithm:")
+        self.markovs_label = tk.Label(self.row_one, text="Learning Algorithm:")
         self.markovs_label.pack(side="left", padx=5)
 
         # dropdown to select algorithm
         # variable to hold the dropdown content
-        self.markov_var = tk.StringVar(value="Heuristic")
+        self.markov_var = tk.StringVar(value="Custom")
+        # self.markov_var.trace("w", self.reset) # reset the board on change
 
         # list to hold the dropdown options
-        options = ["Heuristic", "Markov2", "Markov3", "Markov4", "Markov5"]
+        options = ["Custom", "Q-learning", "Markov3", "Markov4", "Markov5"]
 
         # the actual dropdown object
         self.markov_menu = tk.OptionMenu(self.row_one, self.markov_var, options[0], *options)
@@ -207,6 +211,8 @@ class mazeGUI:
         # loop through every cell in the grid
         for y in range(self.map_height):
             for x in range(self.map_width):
+                exp_val = self.experience[y][x]
+                exp_val = exp_val if exp_val % 1 == 0 else round(exp_val, 1) # only show one decimal if var is float
 
                 # draw cell contents
                 if (x, y) == self.start:
@@ -214,11 +220,11 @@ class mazeGUI:
                 elif (x, y) == self.end:
                     self.draw_cell_content(x, y, "E", "red")
                 elif (x, y) in self.visited:
-                    self.draw_cell_content(x, y, str(self.experience[y][x]), "cyan", font_size=self.CELL_TEXT_FONT_SIZE)
+                    self.draw_cell_content(x, y, str(round(exp_val, 1)), "cyan", font_size=self.CELL_TEXT_FONT_SIZE)
                 elif (x, y) in self.visited_again:
-                    self.draw_cell_content(x, y, str(self.experience[y][x]), "orange", font_size=self.CELL_TEXT_FONT_SIZE)
+                    self.draw_cell_content(x, y, str(round(exp_val, 1)), "orange", font_size=self.CELL_TEXT_FONT_SIZE)
                 else:
-                    self.draw_cell_content(x, y, str(self.experience[y][x]), font_size=self.CELL_TEXT_FONT_SIZE)
+                    self.draw_cell_content(x, y, str(round(exp_val, 1)), font_size=self.CELL_TEXT_FONT_SIZE)
 
 
                 # draw environment
@@ -318,7 +324,8 @@ class mazeGUI:
         self.visited_again = []
         self.pathings = []
         self.execution_time = 0
-        self.experience = [[0 for x in range(self.layout.get_maze_x())] for y in range(self.layout.get_maze_y())]
+        exp_def = 0 if self.markov_var.get() == "Custom" else 1 # change the default experience value when needed
+        self.experience = [[exp_def for x in range(self.layout.get_maze_x())] for y in range(self.layout.get_maze_y())]
         self.run_num = 1
 
         # reenable the gui
@@ -342,8 +349,10 @@ class mazeGUI:
             # get the markov algorithm from the dropdown
             markov_choice = self.markov_var.get()
 
-            if "Heuristic" in markov_choice: # replace with an actual algorithm name
+            if "Custom" == markov_choice: # replace with an actual algorithm name
                 self.search_instance = heuristic_markov.heuristic_markov(self.layout) # placeholder
+            elif "Q-learning" == markov_choice:
+                self.search_instance = qLearning_markov.qlearning_markov(self.layout)
             else:
                 print(f"Algorithm {markov_choice} not implemented")
                 self.reset()
@@ -395,20 +404,28 @@ class mazeGUI:
 
                 # check if reached goal
                 if current_node == self.end:
-                    if self.run_num == iterations:
-                        self.search_started = False
-                        self.draw_final_path()
-                        self.markov_menu.config(state="normal")
-                        return
-                    else:
+                    if self.markov_var.get() == "Custom":
+                        if self.run_num == iterations:
+                            self.search_started = False
+                            self.draw_final_path()
+                            self.markov_menu.config(state="normal")
+                            return
+                        else:
+                            self.pathings.append(self.search_instance.reconstruct_path())
+                            self.draw_final_path()
+                            self.run_num += 1
+                            # self.search_instance.reset()
+                            self.visited = []
+                            self.visited_again = []
+                            self.root.after(1000, self.run_search_step, self.iterations.get())
+                            return
+                    elif self.markov_var.get() == "Q-learning":
                         self.pathings.append(self.search_instance.reconstruct_path())
                         self.draw_final_path()
-                        self.run_num += 1
-                        # self.search_instance.reset()
                         self.visited = []
                         self.visited_again = []
+                        self.qlearning = True
                         self.root.after(1000, self.run_search_step, self.iterations.get())
-                        return
 
                 #schedule the next animation loop
                 if self.max_speed:
