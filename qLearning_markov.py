@@ -185,6 +185,8 @@ class qlearning_markov:
                     if self.run_num == 1:
                         heapq.heappush(self.queue, (weight, policy[0]))
                     else:
+                        if policy[0] == self.end: # ensure end node is reached first
+                            policy[3] += 1000
                         heapq.heappush(self.queue, (-policy[3], policy[0]))
 
 

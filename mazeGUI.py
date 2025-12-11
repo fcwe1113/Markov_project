@@ -96,7 +96,7 @@ class mazeGUI:
         # self.markov_var.trace("w", self.reset) # reset the board on change
 
         # list to hold the dropdown options
-        options = ["Custom", "Q-learning", "Markov3", "Markov4", "Markov5"]
+        options = ["Custom", "Q-learning"]
 
         # the actual dropdown object
         self.markov_menu = tk.OptionMenu(self.row_one, self.markov_var, options[0], *options)
