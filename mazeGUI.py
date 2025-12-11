@@ -237,6 +237,7 @@ class mazeGUI:
             for x in range(self.map_width):
                 exp_val = self.experience[y][x]
                 exp_val = exp_val if exp_val % 1 == 0 else round(exp_val, 1) # only show one decimal if var is float
+                exp_val = str(round(exp_val, 1)) if exp_val < 1000 else str(round(exp_val / 1000, 1)) + "k"
 
                 # draw cell contents
                 if (x, y) == self.start:
@@ -244,11 +245,11 @@ class mazeGUI:
                 elif (x, y) == self.end:
                     self.draw_cell_content(x, y, "E", "red")
                 elif (x, y) in self.visited:
-                    self.draw_cell_content(x, y, str(round(exp_val, 1)), "cyan", font_size=self.CELL_TEXT_FONT_SIZE)
+                    self.draw_cell_content(x, y, exp_val, "cyan", font_size=self.CELL_TEXT_FONT_SIZE)
                 elif (x, y) in self.visited_again:
-                    self.draw_cell_content(x, y, str(round(exp_val, 1)), "orange", font_size=self.CELL_TEXT_FONT_SIZE)
+                    self.draw_cell_content(x, y, exp_val, "orange", font_size=self.CELL_TEXT_FONT_SIZE)
                 else:
-                    self.draw_cell_content(x, y, str(round(exp_val, 1)), font_size=self.CELL_TEXT_FONT_SIZE)
+                    self.draw_cell_content(x, y, exp_val, font_size=self.CELL_TEXT_FONT_SIZE)
 
 
                 # draw environment
