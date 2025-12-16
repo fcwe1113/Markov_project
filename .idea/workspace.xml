@@ -4,10 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0bfb6764-6f36-497e-8e07-ba0d496f7513" name="Changes" comment="make q learning go to the goal first">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/qLearning_markov.py" beforeDir="false" afterPath="$PROJECT_DIR$/qLearning_markov.py" afterDir="false" />
-    </list>
+    <list default="true" id="0bfb6764-6f36-497e-8e07-ba0d496f7513" name="Changes" comment="THE A* IS REAL" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -132,7 +129,7 @@
       <workItem from="1765539174589" duration="19000" />
       <workItem from="1765633112140" duration="1677000" />
       <workItem from="1765639333203" duration="2960000" />
-      <workItem from="1765888944036" duration="3788000" />
+      <workItem from="1765888944036" duration="3805000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit">
       <option name="closed" value="true" />
@@ -246,7 +243,15 @@
       <option name="project" value="LOCAL" />
       <updated>1765466410417</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="THE A* IS REAL">
+      <option name="closed" value="true" />
+      <created>1765892862009</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1765892862009</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -266,7 +271,8 @@
     <MESSAGE value="fucking done pls for fks sake lemme do literally anything else ahhhhhhhhhhhhhhhhhhhhhhhh" />
     <MESSAGE value="make the value display correctly if OVER 1000" />
     <MESSAGE value="make q learning go to the goal first" />
-    <option name="LAST_COMMIT_MESSAGE" value="make q learning go to the goal first" />
+    <MESSAGE value="THE A* IS REAL" />
+    <option name="LAST_COMMIT_MESSAGE" value="THE A* IS REAL" />
   </component>
   <component name="XDebuggerManager">
     <watches-manager>

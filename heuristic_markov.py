@@ -153,10 +153,3 @@ class heuristic_markov:
         for tup in self.visited:
             if tup not in pathing:
                 self.experience[tup[1]][tup[0]] += self.learning_offset
-
-    def q_learn(self, x0, y0, x1, y1, alpha = 1, discount = 0.9):
-        # the q learning algorithm adapted to the program (to the best of my ability)
-        # im not happy with the future cost part of the algorithm but thats something i can do right now without doing recursion jank
-        # this basically means that it takes a few iterations to "boot up"
-
-        self.experience[y0][x0] += alpha * (self.heuristic(x1, y1) - self.heuristic(x0, y0) + discount * self.experience[y1][x1] - self.experience[y0][x0])
