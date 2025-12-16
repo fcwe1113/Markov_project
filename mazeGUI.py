@@ -173,7 +173,7 @@ class mazeGUI:
         self.qlearning_iter_label.pack(side="left", padx=5)
 
         # q learning iteration slider
-        self.qlearning_iter_slider = tk.Scale(self.row_three, orient="horizontal", from_=20, to=1000, command=self.update_sliders)
+        self.qlearning_iter_slider = tk.Scale(self.row_three, orient="horizontal", from_=20, to=5000, command=self.update_sliders)
         self.qlearning_iter_slider.set(self.qlearning_iters.get())
         self.qlearning_iter_slider.pack(side="left", padx=5)
         # ROW 3 END
@@ -237,7 +237,7 @@ class mazeGUI:
             for x in range(self.map_width):
                 exp_val = self.experience[y][x]
                 exp_val = exp_val if exp_val % 1 == 0 else round(exp_val, 1) # only show one decimal if var is float
-                exp_val = str(round(exp_val, 1)) if exp_val < 1000 else str(round(exp_val / 1000, 1)) + "k"
+                exp_val = str(round(exp_val, 1)) if exp_val < 1000 else str(round(exp_val / 1000, 1)) + "k" if exp_val < 1000000 else str(round(exp_val / 1000000, 1)) + "m" if exp_val < 1000000000 else str(round(exp_val / 1000000000, 1)) + "t" if exp_val < 1000000000000 else str(round(exp_val / 1000000000000, 1)) + "q"
 
                 # draw cell contents
                 if (x, y) == self.start:

@@ -145,11 +145,14 @@ class heuristic_markov:
             if len(pathing) <= self.lowest_step:
                 self.lowest_step = len(pathing)
                 for tup in pathing:
-                    self.experience[tup[1]][tup[0]] -= 1 # if the path is as good as the best path yet or better, reduce the experience value
+                    # if the path is as good as the best path yet or better, reduce the experience value
+                    self.experience[tup[1]][tup[0]] -= 1
             else:
                 for tup in pathing:
-                    self.experience[tup[1]][tup[0]] += self.learning_offset // 2 # half the experience value gained because at least the cell led to a valid path
+                    # half the experience value gained because at least the cell led to a valid path
+                    self.experience[tup[1]][tup[0]] += self.learning_offset // 2
 
         for tup in self.visited:
             if tup not in pathing:
+                # add experience value to all coords discovered but not in the path
                 self.experience[tup[1]][tup[0]] += self.learning_offset

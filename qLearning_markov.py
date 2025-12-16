@@ -222,9 +222,9 @@ class qlearning_markov:
         # currently the reward is set to be 1 / distance to goal * 100
 
         alpha = 0.0002
-        discount = 1.5
+        discount = 0.5
         current_val = self.experience[coord[1]][coord[0]]
-        reward = (1 / self.heuristic(coord[0], coord[1]) if self.heuristic(coord[0], coord[1]) != 0 else 0.1) * 50
+        reward = (1 / self.heuristic(coord[0], coord[1]) if self.heuristic(coord[0], coord[1]) != 0 else 0.1) * 30
 
         self.experience[coord[1]][coord[0]] += alpha * (reward * (discount  * self.get_max_q_val(coord)) - current_val)
         self.visited.append(coord)
