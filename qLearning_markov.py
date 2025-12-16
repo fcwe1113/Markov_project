@@ -27,10 +27,10 @@ class qlearning_markov:
         self.start = (maze.startx, maze.starty)
         self.end = (maze.endx, maze.endy)
         self.astar_pathing = [self.start]
-        self.queue = [(self.heuristic(self.start[0], self.start[1]), self.start)]
         self.experience = [[1 for x in range(self.maze.get_maze_x())] for y in range(maze.get_maze_y())]
         self.learn_start = (rng.randint(0, self.maze.get_maze_x() - 1), rng.randint(0, self.maze.get_maze_y() - 1))
         self.iterations = iterations
+        self.g_score_dict = {}
 
     def heuristic(self, x, y):
         return abs(x - self.end[0]) + abs(y - self.end[1])
@@ -63,7 +63,7 @@ class qlearning_markov:
         self.queue = [(self.heuristic(self.start[0], self.start[1]), self.start)]
         self.to_be_reset = False
 
-    def get_policies(self, current_node):
+    def get_policies(self, current_node, current_g):
         policies = []
         neighbors = self.maze.get_traversable_array(current_node[0], current_node[1])
         rng = random.Random()
@@ -88,11 +88,29 @@ class qlearning_markov:
                     if next_node not in self.parent_map:
                         self.parent_map[next_node] = current_node
 
-                    if not neighbors in self.visited and not (self.heuristic(next_node[0], next_node[1]), next_node) in self.queue:
-                        # random_float = rng.uniform(0, self.max_random)
-                        # enable rng if needed later
-                        # add more shit here when necessary
-                        heapq.heappush(policies, (self.heuristic(next_node[0], next_node[1]) + self.experience[next_node[1]][next_node[0]], [next_node, dir, self.heuristic(next_node[0], next_node[1]), self.experience[next_node[1]][next_node[0]]]))
+                    skip = False
+
+                    for (_, _, node) in self.queue:
+                        if node == next_node:
+                            skip = True
+                            break
+
+                    if not neighbors in self.visited and not skip:
+                        g_score = 0
+                        f_score = 0
+                        if self.run_num == 1:
+                            tentative_g = self.g_score_dict.get(current_node, current_g) + 1
+
+                            # skip the node if new path is not better than what we already have
+                            if tentative_g >= self.g_score_dict.get(next_node, float("inf")):
+                                continue
+
+                            self.parent_map[next_node] = current_node
+                            self.g_score_dict[next_node] = tentative_g
+                            (x, y) = next_node
+                            f_score = tentative_g + self.heuristic(x, y)
+
+                        heapq.heappush(policies, (g_score + self.experience[next_node[1]][next_node[0]], [next_node, dir, (g_score, f_score), self.experience[next_node[1]][next_node[0]]]))
 
         return policies
 
@@ -115,8 +133,11 @@ class qlearning_markov:
         self.visited = []
         self.parent_map = {}
         self.parent_map[self.start] = None
+        self.g_score_dict[self.start] = 0
+        f_start = self.heuristic(self.start[0], self.start[1])
+        self.queue = [(f_start, 0.0, self.start)]
 
-        while self.queue: # todo put learning in while loop
+        while self.queue:
 
             if self.learning:
                 rng = random.Random()
@@ -136,28 +157,27 @@ class qlearning_markov:
                     # housekeeping
                     self.run_num += 1
 
-                self.queue = [(0, self.start)]
+                self.queue = [(f_start, 0.0, self.start)]
                 self.learning = False
                 self.visited = []
 
             # get the closest node as current node
-            current_dist, current_node = heapq.heappop(self.queue)
+            f_score, g_score, current_node = heapq.heappop(self.queue)
             self.count += 1
             self.visited.append(current_node)
 
             # get policies
-            policies = self.get_policies(current_node)
+            policies = self.get_policies(current_node, g_score)
 
             # policies to string
-            output = "Available policies (lowest weight will be picked):\n"
-            if not policies:
-                output += "No policies available\n"
-            else:
-                for i in range(len(policies)):
-                    (_, policy) = policies[i]
-                    if self.run_num == 1:
-                        output += f"node: {str(policy[0])}\tdirection: {policy[1]}\tdistance: {policy[2]} + experience: {policy[3]} = sum: {round(policy[2] + policy[3], 2)}\n"
-                    else:
+            output = ""
+            if self.run_num != 1:
+                output += "Available policies (lowest weight will be picked):\n"
+                if not policies:
+                    output += "No policies available\n"
+                else:
+                    for i in range(len(policies)):
+                        (_, policy) = policies[i]
                         output += f"node: {str(policy[0])}\tdirection: {policy[1]}\texperience: {policy[3]}\n"
 
             # yield data to the gui
@@ -171,7 +191,7 @@ class qlearning_markov:
                 else:
                     yield current_node, f"goal reached after {self.count} iterations", time.time_ns() - start_time + self.execution_time, self.experience
             else:
-                yield current_node, f"current node: {current_node}   current distance to goal: {current_dist}\n{output}", self.execution_time, self.experience
+                yield current_node, f"current node: {current_node}   current distance to goal: {self.heuristic(current_node[0], current_node[1])}\n{output}", self.execution_time, self.experience
 
             while policies:
                 (weight, policy) = heapq.heappop(policies)
@@ -183,11 +203,11 @@ class qlearning_markov:
 
                 if not skip:
                     if self.run_num == 1:
-                        heapq.heappush(self.queue, (weight, policy[0]))
+                        heapq.heappush(self.queue, (policy[2][1], policy[2][0], policy[0]))
                     else:
                         if policy[0] == self.end: # ensure end node is reached first
-                            policy[3] += 1000
-                        heapq.heappush(self.queue, (-policy[3], policy[0]))
+                            policy[3] += 100000
+                        heapq.heappush(self.queue, (-policy[3], 0, policy[0]))
 
 
         self.execution_time = time.time_ns() - start_time # todo double check this functionality
